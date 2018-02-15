@@ -1,0 +1,13 @@
+﻿  Sphere.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\include\physics\object.h(2): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  Sceen.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\include\physics\sceen.h(3): fatal error C1083: Cannot open include file: 'glm/glm.hpp': No such file or directory
+  main.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\source\main.cpp(1): fatal error C1083: Cannot open include file: 'PhysicsEngineApp.h': No such file or directory
+  PhysicsEngineApp.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\source\physicsengineapp.cpp(1): fatal error C1083: Cannot open include file: 'PhysicsEngineApp.h': No such file or directory
+  Camera.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\source\camera.cpp(1): fatal error C1083: Cannot open include file: 'Camera.h': No such file or directory
+  Object.cpp
+e:\aie_work\deplomer\y2\aiephysics2018\physicsengine\source\physics\object.cpp(1): fatal error C1083: Cannot open include file: 'Physics\Object.h': No such file or directory
+  Generating Code...

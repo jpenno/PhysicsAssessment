@@ -2,6 +2,8 @@
 #include "Physics\Object.h"
 #include <Gizmos.h>
 
+#include <iostream>
+
 using glm::vec4;
 using namespace Physics;
 
@@ -96,6 +98,7 @@ void Sceen::checkCollisions()
 		{
 			if ((*object)->isColliding(*object2))
 			{
+				std::cout << "collision" << std::endl;
 				Collision tempCollision;
 				tempCollision.objA = *object;
 				tempCollision.objB = *object2;
@@ -107,32 +110,30 @@ void Sceen::checkCollisions()
 
 void Sceen::resolveCollision()
 {
+	//for (auto col : m_ofCollision)
+	//{
+	//	col.objA->applyForce(col.objB->GetMass() * col.objB->GetVelocity());
+	//	col.objB->applyForce(col.objA->GetMass() * col.objA->GetVelocity());
+	//}
+
 	for (auto col : m_ofCollision)
 	{
-		col.objA->applyForce(col.objB->GetMass() * col.objB->GetVelocity());
-		col.objB->applyForce(col.objA->GetMass() * col.objA->GetVelocity());
+		vec3 n = col.objA->GetPosition() - col.objB->GetPosition();
+		glm::normalize(n);
+
+		float reltiveVelocityA = glm::dot(col.objA->GetVelocity(), n);
+		float reltiveVelocityB = glm::dot(col.objB->GetVelocity(), n);
+
+		float optimizedP = (2.0f * (reltiveVelocityA - reltiveVelocityB)) /
+							(col.objA->GetMass() + col.objB->GetMass());
+
+
+		vec3 va = col.objA->GetVelocity() - optimizedP * col.objB->GetMass() * n;
+		vec3 vb = col.objB->GetVelocity() + optimizedP * col.objA->GetMass() * n;
+
+		col.objA->SetVelocity(va);
+
+		col.objB->SetVelocity(vb);
 	}
 	m_ofCollision.clear();
-
-
-	// create a vector from A to B
-	// creat a normilze the vector
-
-
-	// caluacate the reltive velocity
-
-	// find out how much of the relactive velocity goes along the collision vector
-
-	// Start putting togather the impulse force
-	// Elaasticty this will be an object variable, might need to average it from both objects
-	// get the formula from our resources and clacuate j
-
-	// create a functuion for applyImpulse(vec3) in our object
-	// this applies force without muitplying by delta time
-
-	// apply the j along the collision vector firection to object B
-	// apply the j against the collision vector direction to object A
-
-
-	// Seperate the two objects using what ever level of detail of seperation you want
 }

@@ -44,16 +44,18 @@ bool PhysicsEngineApp::startup() {
 	m_sceen->setGravity(vec3());
 
 	// make first heavy object
-	m_sphere = new Sphere(vec3(0,0,0), 2, 10, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	m_sphere->SetVelocity(vec3(5.0f, 0.0f, 0.0f));
+	m_sphere = new Sphere(vec3(0,0,0.5f), 2, 20, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_sphere->SetVelocity(vec3(3.0f, 0.0f, 0.0f));
 
 	m_sceen->addObject(m_sphere);
 
 	// make second light object
-	Physics::Sphere *object2 = new Sphere(vec3(5.0f, 0.0f, 0.0f), 0.5f, 1.0f, vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
+	Sphere *object2 = new Sphere(vec3(10.0f, 0.0f, 0.0f), 0.5f, 1.0f,
+								vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	m_sceen->addObject(object2);
 
-	Physics::Sphere *Sphere3 = new Sphere(vec3(-3, 8.0f, 3.0f), 2, 1.0f, vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
+	Sphere *Sphere3 = new Sphere(vec3(-3, 8.0f, 3.0f), 2, 1.0f, 
+								vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_sceen->addObject(Sphere3);
 
 
@@ -72,9 +74,11 @@ void PhysicsEngineApp::update(float deltaTime) {
 	m_camera->Update(deltaTime);
 
 	ImGui::Begin("gravity deBug");
-	ImGui::Text("object Velocity: %.2f", m_sphere->GetVelocity().y);
-	ImGui::End();
+	ImGui::Text("object Velocity x: %.2f", m_sphere->GetVelocity().x);
+	ImGui::Text("object Velocity y: %.2f", m_sphere->GetVelocity().y);
+	ImGui::Text("object Velocity z: %.2f", m_sphere->GetVelocity().z);
 
+	ImGui::End();
 
 	// wipe the gizmos clean for this frame
 	Gizmos::clear();

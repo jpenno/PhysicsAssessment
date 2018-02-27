@@ -1,5 +1,6 @@
 #include "..\..\include\Physics\Sceen.h"
 #include "Physics\Object.h"
+#include "Physics\Sphere.h"
 #include <Gizmos.h>
 
 #include <iostream>
@@ -110,30 +111,51 @@ void Sceen::checkCollisions()
 
 void Sceen::resolveCollision()
 {
-	//for (auto col : m_ofCollision)
-	//{
-	//	col.objA->applyForce(col.objB->GetMass() * col.objB->GetVelocity());
-	//	col.objB->applyForce(col.objA->GetMass() * col.objA->GetVelocity());
-	//}
-
 	for (auto col : m_ofCollision)
 	{
+		// First, find the normalized vector n from the center of 
+		// objA to the center of objB
 		vec3 n = col.objA->GetPosition() - col.objB->GetPosition();
-		glm::normalize(n);
+		n = glm::normalize(n);
 
+		// Find the length of the component of each of the movement
+		// vectors along n. 
 		float reltiveVelocityA = glm::dot(col.objA->GetVelocity(), n);
 		float reltiveVelocityB = glm::dot(col.objB->GetVelocity(), n);
 
+		// calculate the force of the collision
 		float optimizedP = (2.0f * (reltiveVelocityA - reltiveVelocityB)) /
 							(col.objA->GetMass() + col.objB->GetMass());
 
-
+		// calculate the new movement vector for object A
 		vec3 va = col.objA->GetVelocity() - optimizedP * col.objB->GetMass() * n;
+	
+		// calculate the new movement vector for object B
 		vec3 vb = col.objB->GetVelocity() + optimizedP * col.objA->GetMass() * n;
 
-		col.objA->SetVelocity(va);
+		if (!col.objA->GetIsStatic())
+			col.objA->SetVelocity(va);
 
-		col.objB->SetVelocity(vb);
+		if (!col.objB->GetIsStatic())
+			col.objB->SetVelocity(vb);
+
+		// seperate the two objects
+		// cast obj to sphere to get there radi
+		Sphere * sa = (Sphere*)col.objA;
+		Sphere * sb = (Sphere*)col.objB;
+
+		float radi = sa->GetRadius() + sb->GetRadius();
+		float distince = glm::distance(sb->GetPosition(), sa->GetPosition());
+
+		if (distince < radi)
+		{
+			// find out how much they overlap
+			float overlap = radi - distince;
+
+			// move the objects apart
+			sa->SetPosition(sa->GetPosition() - (overlap / 2));
+			sb->SetPosition(sb->GetPosition() + (overlap / 2));
+		}
 	}
 	m_ofCollision.clear();
 }

@@ -10,6 +10,7 @@ Object::Object(ShapeType shape, vec3 pos, float mass, vec4 color, bool isStatic)
 {
 	m_velocity = vec3();
 	m_acceleration = vec3();
+	m_impulse = vec3();
 }
 
 Object::~Object()
@@ -23,8 +24,13 @@ void Object::update(float deltaTime)
 		// apply friction
 		applyForce(-m_velocity * m_friction);
 
+		m_velocity += m_impulse;
 		m_velocity += m_acceleration * deltaTime;
 		m_position += m_velocity * deltaTime;
+
+
+		// reset impulse to zero after adding it to the velocity
+		m_impulse = vec3();
 
 		// reset acceleration to zero
 		m_acceleration = vec3();
@@ -72,6 +78,15 @@ bool Object::isCollidingSphereSphere(Sphere * objecta, Sphere * objectb)
 	// add up the two radi
 	float radi = objecta->GetRadius() + objectb->GetRadius();
 
+
 	// is the distince smaller then the two radi
-	return distince < radi;
+	if (distince < radi)
+	{
+		//float diff = distince - radi;
+
+		//objecta->SetPosition(objecta->GetPosition() - (diff + 0.2f));
+		// TODO: add seperation code so the spheres dont stay inside each other
+		return true;
+	}
+	return false;
 }

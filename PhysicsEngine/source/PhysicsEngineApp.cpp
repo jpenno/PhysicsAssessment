@@ -44,13 +44,13 @@ bool PhysicsEngineApp::startup() {
 	m_sceen->setGravity(vec3());
 
 	// make first heavy object
-	m_sphere = new Sphere(vec3(0,0,0.5f), 2, 20, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	m_sphere->SetVelocity(vec3(3.0f, 0.0f, 0.0f));
+	m_sphere = new Sphere(vec3(0,0,1.f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_sphere->SetVelocity(vec3(10.0f, 0.0f, 0.0f));
 
 	m_sceen->addObject(m_sphere);
 
 	// make second light object
-	Sphere *object2 = new Sphere(vec3(10.0f, 0.0f, 0.0f), 0.5f, 1.0f,
+	Sphere *object2 = new Sphere(vec3(10.0f, 0.0f, 0.0f), 2, 1.0f,
 								vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	m_sceen->addObject(object2);
 

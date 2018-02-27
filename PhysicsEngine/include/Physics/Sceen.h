@@ -21,6 +21,7 @@ namespace Physics {
 		~Sceen();
 
 		void update(float deltaTime);
+		void draw();
 
 		inline const vec3 & getGravity() const { return m_gravity; }
 		inline const vec3 & getGlobalForce() const { return m_globalForce; }
@@ -32,7 +33,6 @@ namespace Physics {
 		void addObject(Object* object);
 		void removeObject(Object* object);
 		void applyGlobalForce();
-		void draw();
 
 	protected:
 		vector<Object*> m_objects;

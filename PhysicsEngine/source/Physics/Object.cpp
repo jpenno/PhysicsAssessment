@@ -78,15 +78,6 @@ bool Object::isCollidingSphereSphere(Sphere * objecta, Sphere * objectb)
 	// add up the two radi
 	float radi = objecta->GetRadius() + objectb->GetRadius();
 
-
 	// is the distince smaller then the two radi
-	if (distince < radi)
-	{
-		//float diff = distince - radi;
-
-		//objecta->SetPosition(objecta->GetPosition() - (diff + 0.2f));
-		// TODO: add seperation code so the spheres dont stay inside each other
-		return true;
-	}
-	return false;
+	return distince < radi;
 }

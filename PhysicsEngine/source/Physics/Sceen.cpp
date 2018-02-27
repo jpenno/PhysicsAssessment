@@ -1,6 +1,8 @@
 #include "..\..\include\Physics\Sceen.h"
 #include "Physics\Object.h"
 #include "Physics\Sphere.h"
+#include "Physics\Plain.h"
+
 #include <Gizmos.h>
 
 #include <iostream>
@@ -99,7 +101,6 @@ void Sceen::checkCollisions()
 		{
 			if ((*object)->isColliding(*object2))
 			{
-				std::cout << "collision" << std::endl;
 				Collision tempCollision;
 				tempCollision.objA = *object;
 				tempCollision.objB = *object2;
@@ -113,49 +114,124 @@ void Sceen::resolveCollision()
 {
 	for (auto col : m_ofCollision)
 	{
-		// First, find the normalized vector n from the center of 
-		// objA to the center of objB
-		vec3 n = col.objA->GetPosition() - col.objB->GetPosition();
-		n = glm::normalize(n);
-
-		// Find the length of the component of each of the movement
-		// vectors along n. 
-		float reltiveVelocityA = glm::dot(col.objA->GetVelocity(), n);
-		float reltiveVelocityB = glm::dot(col.objB->GetVelocity(), n);
-
-		// calculate the force of the collision
-		float optimizedP = (2.0f * (reltiveVelocityA - reltiveVelocityB)) /
-							(col.objA->GetMass() + col.objB->GetMass());
-
-		// calculate the new movement vector for object A
-		vec3 va = col.objA->GetVelocity() - optimizedP * col.objB->GetMass() * n;
-	
-		// calculate the new movement vector for object B
-		vec3 vb = col.objB->GetVelocity() + optimizedP * col.objA->GetMass() * n;
-
-		if (!col.objA->GetIsStatic())
-			col.objA->SetVelocity(va);
-
-		if (!col.objB->GetIsStatic())
-			col.objB->SetVelocity(vb);
+		if (col.objA->GetIsStatic() || col.objB->GetIsStatic()){
+			resolveStaticDynamicCollision(col);
+		}
+		else{
+			resolveDynamicDynamicCollision(col);
+		}
 
 		// seperate the two objects
-		// cast obj to sphere to get there radi
-		Sphere * sa = (Sphere*)col.objA;
-		Sphere * sb = (Sphere*)col.objB;
+		// seperate two spheres
+		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == SPHERE)
+			seperateSphereSphere((Sphere*)col.objA, (Sphere*)col.objB);
 
-		float radi = sa->GetRadius() + sb->GetRadius();
-		float distince = glm::distance(sb->GetPosition(), sa->GetPosition());
+		if (col.objA->GetShape() == PLAIN && col.objB->GetShape() == SPHERE)
+			seperateSpherePlain((Sphere*)col.objB, (Plain*)col.objA);
 
-		if (distince < radi)
+		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == PLAIN)
+			seperateSpherePlain((Sphere*)col.objA, (Plain*)col.objB);
+	}
+	m_ofCollision.clear();
+}
+
+void Physics::Sceen::resolveStaticDynamicCollision(Collision  col)
+{
+	vec3 n = col.objA->GetPosition() - col.objB->GetPosition();
+	n = glm::normalize(n);
+
+	vec3 nonstaticVelocity;
+	vec3 plainNormal;
+	if (col.objA->GetIsStatic())
+	{
+		nonstaticVelocity = col.objB->GetVelocity();
+		Plain * plain = (Plain*)col.objA;
+		plainNormal = plain->getNormal();
+	}
+	else
+	{
+		nonstaticVelocity = col.objA->GetVelocity();
+		Plain * plain = (Plain*)col.objB;
+		plainNormal = plain->getNormal();
+	}
+
+	vec3 velocity = nonstaticVelocity - (1 + 1) * glm::dot(nonstaticVelocity, plainNormal) * plainNormal;
+
+	if (!col.objA->GetIsStatic())
+		col.objA->SetVelocity(velocity);
+
+	if (!col.objB->GetIsStatic())
+		col.objB->SetVelocity(velocity);
+}
+
+void Physics::Sceen::resolveDynamicDynamicCollision(Collision  & col)
+{
+	// First, find the normalized vector n from the center of 
+	// objA to the center of objB
+	vec3 n = col.objA->GetPosition() - col.objB->GetPosition();
+	n = glm::normalize(n);
+
+	// Find the length of the component of each of the movement
+	// vectors along n. 
+	float reltiveVelocityA = glm::dot(col.objA->GetVelocity(), n);
+	float reltiveVelocityB = glm::dot(col.objB->GetVelocity(), n);
+
+	// calculate the force of the collision
+	float optimizedP = (2.0f * (reltiveVelocityA - reltiveVelocityB)) /
+		(col.objA->GetMass() + col.objB->GetMass());
+
+	// calculate the new movement vector for object A
+	vec3 va = col.objA->GetVelocity() - optimizedP * col.objB->GetMass() * n;
+
+	// calculate the new movement vector for object B
+	vec3 vb = col.objB->GetVelocity() + optimizedP * col.objA->GetMass() * n;
+
+	if (!col.objA->GetIsStatic())
+		col.objA->SetVelocity(va);
+
+	if (!col.objB->GetIsStatic())
+		col.objB->SetVelocity(vb);
+}
+
+void Sceen::seperateSphereSphere(Sphere * sa, Sphere * sb)
+{
+	float radi = sa->GetRadius() + sb->GetRadius();
+	float distince = glm::distance(sb->GetPosition(), sa->GetPosition());
+
+	if (distince < radi)
+	{
+		// find out how much they overlap
+		float overlap = radi - distince;
+
+		// check if ever sphere is static
+		if (sa->GetIsStatic() || sb->GetIsStatic())
+		{			
+			// onley move the non static sphere
+			if (!sa->GetIsStatic())
+				sa->SetPosition(sa->GetPosition() - overlap);
+		
+			if (!sb->GetIsStatic())
+				sb->SetPosition(sb->GetPosition() + overlap );
+		}
+		else
 		{
-			// find out how much they overlap
-			float overlap = radi - distince;
-
 			// move the objects apart
 			sa->SetPosition(sa->GetPosition() - (overlap / 2));
 			sb->SetPosition(sb->GetPosition() + (overlap / 2));
 		}
 	}
-	m_ofCollision.clear();
+}
+
+void Physics::Sceen::seperateSpherePlain(Sphere * sphere, Plain * plain)
+{
+	// get the spheres distince to the plain
+	float distince = glm::dot(plain->getNormal(), sphere->GetPosition());
+
+	// get how far past the plan the sphere is
+	float overLap = sphere->GetRadius() - distince;
+
+	// moving the sphere the direction of the normal the overlat amount
+	vec3 tmp =  overLap * plain->getNormal();
+
+	sphere->SetPosition(sphere->GetPosition() + tmp);
 }

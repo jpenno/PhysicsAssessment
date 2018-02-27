@@ -1,6 +1,9 @@
 #include "Physics\Object.h"
 #include "Physics\Sphere.h"
+#include "Physics\Plain.h"
 #include <Gizmos.h>
+
+#include <iostream>
 using namespace Physics;
 
 using glm::vec3;
@@ -27,7 +30,6 @@ void Object::update(float deltaTime)
 		m_velocity += m_impulse;
 		m_velocity += m_acceleration * deltaTime;
 		m_position += m_velocity * deltaTime;
-
 
 		// reset impulse to zero after adding it to the velocity
 		m_impulse = vec3();
@@ -59,6 +61,18 @@ bool Object::isColliding(Object * other)
 			break;
 
 		case Physics::PLAIN:
+			return isCollidingSpherePlain((Sphere*)this, (Plain*)other);
+			break;
+		}
+		break;
+	case Physics::PLAIN:
+		switch (other->GetShape())
+		{
+		case Physics::SPHERE:
+			return isCollidingSpherePlain((Sphere*)other, (Plain*)this);
+			break;
+
+		case Physics::AABB:
 			//TODO: add collision deticion
 			break;
 		}
@@ -80,4 +94,16 @@ bool Object::isCollidingSphereSphere(Sphere * objecta, Sphere * objectb)
 
 	// is the distince smaller then the two radi
 	return distince < radi;
+}
+
+bool Object::isCollidingSpherePlain(Sphere * sphere, Plain * plain)
+{	
+	// find distince to the plain 
+	float distince = glm::dot(plain->getNormal(), sphere->GetPosition());
+
+	if (distince < sphere->GetRadius()){
+		//sphere->SetVelocity(vec3());
+		return true;
+	}
+	return false;
 }

@@ -7,6 +7,8 @@ using std::vector;
 
 namespace Physics {
 	class Object;
+	class Sphere;
+	class Plain;
 
 	struct Collision
 	{
@@ -48,5 +50,10 @@ namespace Physics {
 		void applyGravity();
 		void checkCollisions();
 		void resolveCollision();
+		void resolveStaticDynamicCollision(Collision  col);
+		void resolveDynamicDynamicCollision(Collision  & col);
+		void seperateSphereSphere(Sphere * sa, Sphere * sb);
+		void seperateSpherePlain(Sphere * sphere, Plain * plain);
+
 	};
 }

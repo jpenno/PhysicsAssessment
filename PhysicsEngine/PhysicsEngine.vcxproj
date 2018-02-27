@@ -166,6 +166,7 @@
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\PhysicsEngineApp.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\Physics\Plain.cpp" />
     <ClCompile Include="source\Physics\Sceen.cpp" />
     <ClCompile Include="source\Physics\Sphere.cpp" />
   </ItemGroup>
@@ -173,6 +174,7 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\PhysicsEngineApp.h" />
     <ClInclude Include="include\Physics\Object.h" />
+    <ClInclude Include="include\Physics\Plain.h" />
     <ClInclude Include="include\Physics\Sceen.h" />
     <ClInclude Include="include\Physics\Sphere.h" />
   </ItemGroup>

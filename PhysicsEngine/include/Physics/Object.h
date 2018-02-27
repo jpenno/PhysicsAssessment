@@ -6,6 +6,7 @@ using glm::vec4;
 namespace Physics {
 	enum ShapeType { SPHERE, PLAIN,AABB };
 	class Sphere;
+	class Plain;
 
 	class Object
 	{
@@ -55,5 +56,7 @@ namespace Physics {
 		float m_friction = 0.3f;
 
 		bool isCollidingSphereSphere(Sphere *objecta, Sphere * objectb);
+		bool isCollidingSpherePlain(Sphere *objA, Plain *objB);
+
 	};
 }

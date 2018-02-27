@@ -12,7 +12,6 @@ namespace Physics {
 
 class PhysicsEngineApp : public aie::Application {
 public:
-
 	PhysicsEngineApp();
 	virtual ~PhysicsEngineApp();
 

@@ -8,6 +8,7 @@
 #include "Physics\Sceen.h"
 #include "Physics\Object.h"
 #include "Physics\Sphere.h"
+#include "Physics\Plain.h"
 using namespace Physics;
 
 #include <imgui.h>
@@ -41,16 +42,16 @@ bool PhysicsEngineApp::startup() {
 
 	// set the sceen up
 	m_sceen = new Sceen();
-	m_sceen->setGravity(vec3());
+	//m_sceen->setGravity(vec3());
 
 	// make first heavy object
-	m_sphere = new Sphere(vec3(0,0,1.f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	m_sphere->SetVelocity(vec3(10.0f, 0.0f, 0.0f));
+	m_sphere = new Sphere(vec3(5, 10.0f,0.0f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_sphere->SetVelocity(vec3(2.0f, -4.0f, 0.0f));
 
 	m_sceen->addObject(m_sphere);
 
-	// make second light object
-	Sphere *object2 = new Sphere(vec3(10.0f, 0.0f, 0.0f), 2, 1.0f,
+	//// make second light object
+	Sphere *object2 = new Sphere(vec3(10.0f, 2.5f, 0.0f), 2, 1.0f,
 								vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	m_sceen->addObject(object2);
 
@@ -58,6 +59,8 @@ bool PhysicsEngineApp::startup() {
 								vec4(1.0f, 1.0f, 0.2f, 1.0f), true);
 	m_sceen->addObject(Sphere3);
 
+	Plain * plain = new Plain(vec3(0, 0, 0), vec3(0, 1, 0), 100, vec4(0, 0, 1, 1), true);
+	m_sceen->addObject(plain);
 
 	//m_sceen->setGlobalForce(vec3(1.0f, 0.0f, 0.0f));
 
@@ -77,7 +80,6 @@ void PhysicsEngineApp::update(float deltaTime) {
 	ImGui::Text("object Velocity x: %.2f", m_sphere->GetVelocity().x);
 	ImGui::Text("object Velocity y: %.2f", m_sphere->GetVelocity().y);
 	ImGui::Text("object Velocity z: %.2f", m_sphere->GetVelocity().z);
-
 	ImGui::End();
 
 	// wipe the gizmos clean for this frame

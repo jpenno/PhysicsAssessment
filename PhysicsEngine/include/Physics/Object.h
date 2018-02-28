@@ -16,14 +16,11 @@ namespace Physics {
 	public:
 		virtual ~Object() = 0;
 
-
-
 		void update(float deltaTime);
 		void applyForce(const glm::vec3 & forece);
 
 		virtual void draw() = 0;
 		bool isColliding(Object *other);
-
 
 		inline const vec3 & GetPosition() const { return m_position; }
 		inline const vec3 & GetVelocity() const { return m_velocity; }

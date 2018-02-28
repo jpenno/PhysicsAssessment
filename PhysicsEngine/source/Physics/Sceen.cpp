@@ -155,7 +155,7 @@ void Physics::Sceen::resolveStaticDynamicCollision(Collision  col)
 		plainNormal = plain->getNormal();
 	}
 
-	vec3 velocity = nonstaticVelocity - (1 + 1) * glm::dot(nonstaticVelocity, plainNormal) * plainNormal;
+	vec3 velocity = nonstaticVelocity - (1 + 0.7f) * glm::dot(nonstaticVelocity, plainNormal) * plainNormal;
 
 	if (!col.objA->GetIsStatic())
 		col.objA->SetVelocity(velocity);
@@ -225,7 +225,8 @@ void Sceen::seperateSphereSphere(Sphere * sa, Sphere * sb)
 void Physics::Sceen::seperateSpherePlain(Sphere * sphere, Plain * plain)
 {
 	// get the spheres distince to the plain
-	float distince = glm::dot(plain->getNormal(), sphere->GetPosition());
+	vec3 spereNewPos = sphere->GetPosition() - plain->GetPosition();
+	float distince = glm::dot(plain->getNormal(), spereNewPos);
 
 	// get how far past the plan the sphere is
 	float overLap = sphere->GetRadius() - distince;

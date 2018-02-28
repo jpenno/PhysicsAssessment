@@ -99,7 +99,9 @@ bool Object::isCollidingSphereSphere(Sphere * objecta, Sphere * objectb)
 bool Object::isCollidingSpherePlain(Sphere * sphere, Plain * plain)
 {	
 	// find distince to the plain 
-	float distince = glm::dot(plain->getNormal(), sphere->GetPosition());
+	vec3 tmp = sphere->GetPosition() - plain->GetPosition();
+	float distince = glm::dot(plain->getNormal(), tmp);
+	std::cout << "distince: " << distince << std::endl;
 
 	if (distince < sphere->GetRadius()){
 		//sphere->SetVelocity(vec3());

@@ -9,6 +9,7 @@ namespace Physics {
 	class Object;
 	class Sphere;
 	class Plain;
+	class Aabb;
 
 	struct Collision
 	{
@@ -54,6 +55,6 @@ namespace Physics {
 		void resolveDynamicDynamicCollision(Collision  & col);
 		void seperateSphereSphere(Sphere * sa, Sphere * sb);
 		void seperateSpherePlain(Sphere * sphere, Plain * plain);
-
+		void seperateAABBPlain(Aabb * aabb, Plain * plain);
 	};
 }

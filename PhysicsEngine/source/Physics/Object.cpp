@@ -76,7 +76,7 @@ bool Object::isColliding(Object * other)
 			break;
 
 		case Physics::AABB:
-			isCollidingAABBPlain((Aabb*)other, (Plain*)this);
+			return isCollidingAABBPlain((Aabb*)other, (Plain*)this);
 			break;
 		}
 		break;
@@ -84,7 +84,7 @@ bool Object::isColliding(Object * other)
 		switch (other->GetShape())
 		{
 		case Physics::PLAIN:
-			isCollidingAABBPlain((Aabb*) this, (Plain*) other);
+			return isCollidingAABBPlain((Aabb*) this, (Plain*) other);
 			break;
 		case Physics::SPHERE:
 			return isCollidingAABBSphere((Aabb*)this, (Sphere*)other);
@@ -125,19 +125,17 @@ bool Object::isCollidingSpherePlain(Sphere * sphere, Plain * plain)
 
 bool Object::isCollidingAABBPlain(Aabb * aabb, Plain * plain)
 {
+
 	vec3 tmp = aabb->GetPosition() - plain->GetPosition();
 	float distince = glm::dot(plain->getNormal(), tmp);
 	
 	if (distince < aabb->getSize().y) {
-		aabb->SetVelocity(vec3());
 		return true;
 	}
 	if (distince < aabb->getSize().x) {
-		aabb->SetVelocity(vec3());
 		return true;
 	}
 	if (distince < aabb->getSize().z) {
-		aabb->SetVelocity(vec3());
 		return true;
 	}
 	return false;

@@ -1,6 +1,7 @@
 #include "..\..\include\Physics\Sceen.h"
 #include "Physics\Sphere.h"
 #include "Physics\Plain.h"
+#include "Physics\AABB.h"
 
 #include <Gizmos.h>
 
@@ -113,23 +114,34 @@ void Sceen::resolveCollision()
 {
 	for (auto col : m_ofCollision)
 	{
-		if (col.objA->GetIsStatic() || col.objB->GetIsStatic()){
-			resolveStaticDynamicCollision(col);
-		}
-		else{
-			resolveDynamicDynamicCollision(col);
-		}
+		//if (col.objA->GetIsStatic() || col.objB->GetIsStatic()){
+		//	resolveStaticDynamicCollision(col);
+		//}
+		//else{
+		//	resolveDynamicDynamicCollision(col);
+		//}
 
 		// seperate the two objects
-		// seperate two spheres
+		// seperate two sphere **************************************************************
 		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == SPHERE)
 			seperateSphereSphere((Sphere*)col.objA, (Sphere*)col.objB);
+		//***********************************************************************************
 
+		// seperate Sphere Plain ************************************************************
 		if (col.objA->GetShape() == PLAIN && col.objB->GetShape() == SPHERE)
 			seperateSpherePlain((Sphere*)col.objB, (Plain*)col.objA);
 
 		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == PLAIN)
 			seperateSpherePlain((Sphere*)col.objA, (Plain*)col.objB);
+		//***********************************************************************************
+
+		// seperate AABB Plain **************************************************************
+		if (col.objA->GetShape() == PLAIN && col.objB->GetShape() == AABB)
+			seperateAABBPlain((Aabb*)col.objB, (Plain*)col.objA);
+
+		if (col.objA->GetShape() == AABB && col.objB->GetShape() == PLAIN)
+			seperateAABBPlain((Aabb*)col.objA, (Plain*)col.objB);
+		//***********************************************************************************
 	}
 	m_ofCollision.clear();
 }
@@ -236,8 +248,29 @@ void Physics::Sceen::seperateSpherePlain(Sphere * sphere, Plain * plain)
 	// get how far past the plan the sphere is
 	float overLap = sphere->GetRadius() - distince;
 
-	// moving the sphere the direction of the normal the overlat amount
+	// moving the sphere the direction of the normal the overlap amount
 	vec3 tmp =  overLap * plain->getNormal();
 
 	sphere->SetPosition(sphere->GetPosition() + tmp);
+}
+
+void Sceen::seperateAABBPlain(Aabb * aabb, Plain * plain)
+{
+	// get the spheres distince to the plain
+	vec3 spereNewPos = aabb->GetPosition() - plain->GetPosition();
+	float distince = glm::dot(plain->getNormal(), spereNewPos);
+
+	// get the size of the side closest to the plain
+	float  size = glm::dot(aabb->getSize() , plain->getNormal());
+	if (size < 0){
+		size *= -1;
+	}
+
+	// get how far past the plan the sphere is
+	float overLap = size - distince;
+
+	// moving the sphere the direction of the normal the overlap amount
+	vec3 tmp = overLap * plain->getNormal();
+
+	aabb->SetPosition(aabb->GetPosition() + tmp);
 }

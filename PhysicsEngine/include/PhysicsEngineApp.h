@@ -20,10 +20,11 @@ public:
 	virtual void draw();
 
 protected:
-
 	// camera transforms
 	Camera *m_camera = nullptr;
 
 	Physics::Sceen *m_sceen = nullptr;
 	Physics::Sphere *m_sphere = nullptr;
+
+	void SpawnSpheres();
 };

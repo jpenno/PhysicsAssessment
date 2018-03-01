@@ -114,12 +114,18 @@ void Sceen::resolveCollision()
 {
 	for (auto col : m_ofCollision)
 	{
-		//if (col.objA->GetIsStatic() || col.objB->GetIsStatic()){
-		//	resolveStaticDynamicCollision(col);
-		//}
-		//else{
-		//	resolveDynamicDynamicCollision(col);
-		//}
+		if (col.objA->GetIsStatic() || col.objB->GetIsStatic()){
+			resolveStaticDynamicCollision(col);
+		}
+		else{
+			//if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == AABB)
+			//	resolveSphereAABBCollision((Aabb*)col.objB, (Sphere*)col.objA);
+
+			//if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == AABB)
+			//	resolveSphereAABBCollision((Aabb*)col.objB, (Sphere*)col.objA);
+
+			resolveDynamicDynamicCollision(col);
+		}
 
 		// seperate the two objects
 		// seperate two sphere **************************************************************
@@ -141,6 +147,14 @@ void Sceen::resolveCollision()
 
 		if (col.objA->GetShape() == AABB && col.objB->GetShape() == PLAIN)
 			seperateAABBPlain((Aabb*)col.objA, (Plain*)col.objB);
+		//***********************************************************************************
+
+		// seperate AABB Sphere ************************************************************
+		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == AABB)
+			seperateSphereAABB((Aabb*)col.objB, (Sphere*)col.objA);
+	
+		if (col.objA->GetShape() == SPHERE && col.objB->GetShape() == AABB)
+			seperateSphereAABB((Aabb*)col.objB, (Sphere*)col.objA);
 		//***********************************************************************************
 	}
 	m_ofCollision.clear();
@@ -202,6 +216,36 @@ void Physics::Sceen::resolveDynamicDynamicCollision(Collision  & col)
 
 	if (!col.objB->GetIsStatic())
 		col.objB->SetVelocity(vb);
+}
+
+void Sceen::resolveSphereAABBCollision(Aabb * aabb, Sphere * sphere)
+{
+	// First, find the normalized vector n from the center of 
+	// objA to the center of objB
+	vec3 n = sphere->GetPosition() - aabb->getContactPoint();
+	n = glm::normalize(n);
+
+	// Find the length of the component of each of the movement
+	// vectors along n. 
+	float reltiveVelocityA = glm::dot(sphere->GetVelocity(), n);
+	float reltiveVelocityB = glm::dot(aabb->GetVelocity(), n);
+
+	// calculate the force of the collision
+	float optimizedP = (2.0f * (reltiveVelocityA - reltiveVelocityB)) /
+		(sphere->GetMass() + aabb->GetMass());
+
+	// calculate the new movement vector for object A
+	vec3 va = sphere->GetVelocity() - optimizedP * aabb->GetMass() * n;
+
+	// calculate the new movement vector for object B
+	vec3 vb = aabb->GetVelocity() + optimizedP * sphere->GetMass() * n;
+
+	if (!sphere->GetIsStatic())
+		sphere->SetVelocity(va);
+
+	if (!aabb->GetIsStatic())
+		aabb->SetVelocity(vb);
+
 }
 
 void Sceen::seperateSphereSphere(Sphere * sa, Sphere * sb)
@@ -273,4 +317,36 @@ void Sceen::seperateAABBPlain(Aabb * aabb, Plain * plain)
 	vec3 tmp = overLap * plain->getNormal();
 
 	aabb->SetPosition(aabb->GetPosition() + tmp);
+}
+
+void Sceen::seperateSphereAABB(Aabb * aabb, Sphere * sphere)
+{
+	float distince = glm::distance(sphere->GetPosition(), aabb->getContactPoint());
+
+	if (distince < sphere->GetRadius())
+	{
+		// find out how much they overlap
+		float overlap = sphere->GetRadius() - distince;
+		vec3 n = sphere->GetPosition() - aabb->getContactPoint() ;
+		n = glm::normalize(n);
+
+		vec3 tmp =( overlap / 2 )*  n;
+
+		// check if ever sphere is static
+		if (sphere->GetIsStatic() || aabb->GetIsStatic())
+		{
+			// onley move the non static sphere
+			if (!sphere->GetIsStatic())
+				sphere->SetPosition(sphere->GetPosition() - overlap);
+
+			if (!aabb->GetIsStatic())
+				aabb->SetPosition(aabb->GetPosition() + overlap);
+		}
+		else
+		{
+			// move the objects apart
+			aabb->SetPosition(aabb->GetPosition() - tmp);
+			sphere->SetPosition(sphere->GetPosition() + tmp);
+		}
+	}
 }

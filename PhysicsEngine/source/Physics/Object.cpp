@@ -185,7 +185,16 @@ bool Physics::Object::isCollidingAABBSphere(Aabb * aabb, Sphere * sphere)
 
 		if (check(sphere->GetPosition(), clampPos))
 		{
-			sphere->SetVelocity(vec3());
+			float d1 = glm::distance(sphere->GetPosition().y, aabb->getMax().y);
+			float d2 = glm::distance(sphere->GetPosition().y, aabb->getMin().y);
+		
+			if ( d1 < d2)
+				clampPos.y = aabb->GetPosition().y + aabb->getSize().y;
+	
+			if ( d2 < d1)
+				clampPos.y = aabb->GetPosition().y - aabb->getSize().y;
+		
+			aabb->setContactPoint(clampPos);
 			return true;
 		}
 	}
@@ -203,7 +212,16 @@ bool Physics::Object::isCollidingAABBSphere(Aabb * aabb, Sphere * sphere)
 
 		if (check(sphere->GetPosition(), clampPos))
 		{
-			sphere->SetVelocity(vec3());
+			float d1 = glm::distance(sphere->GetPosition().x, aabb->getMax().x);
+			float d2 = glm::distance(sphere->GetPosition().x, aabb->getMin().x);
+
+			if (d1 < d2)
+				clampPos.x = aabb->GetPosition().x + aabb->getSize().x;
+
+			if (d2 < d1)
+				clampPos.x = aabb->GetPosition().x - aabb->getSize().x;
+
+			aabb->setContactPoint(clampPos);
 			return true;
 		}
 	}
@@ -221,7 +239,15 @@ bool Physics::Object::isCollidingAABBSphere(Aabb * aabb, Sphere * sphere)
 
 		if (check(sphere->GetPosition(), clampPos))
 		{
-			sphere->SetVelocity(vec3());
+			float d1 = glm::distance(sphere->GetPosition().z, aabb->getMax().z);
+			float d2 = glm::distance(sphere->GetPosition().z, aabb->getMin().z);
+
+			if (d1 < d2)
+				clampPos.z = aabb->GetPosition().z + aabb->getSize().z;
+
+			if (d2 < d1)
+				clampPos.z = aabb->GetPosition().z - aabb->getSize().z;
+			aabb->setContactPoint(clampPos);
 			return true;
 		}
 	}

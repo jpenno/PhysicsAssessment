@@ -50,11 +50,15 @@ namespace Physics {
 	private:
 		void applyGravity();
 		void checkCollisions();
+
 		void resolveCollision();
 		void resolveStaticDynamicCollision(Collision  col);
 		void resolveDynamicDynamicCollision(Collision  & col);
+		void resolveSphereAABBCollision(Aabb * aabb, Sphere * sphere);
+
 		void seperateSphereSphere(Sphere * sa, Sphere * sb);
 		void seperateSpherePlain(Sphere * sphere, Plain * plain);
 		void seperateAABBPlain(Aabb * aabb, Plain * plain);
+		void seperateSphereAABB(Aabb * aabb, Sphere * sphere);
 	};
 }

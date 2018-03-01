@@ -42,15 +42,14 @@ bool PhysicsEngineApp::startup() {
 
 	// set the sceen up
 	m_sceen = new Sceen();
-	m_sceen->setGravity(vec3(0.0f, 0.0f, 0.0f));
+	//m_sceen->setGravity(vec3(0.0f, 0.0f, 0.0f));
 
 	//SpawnSpheres();
 
 	// make first heavy object
-	//m_sphere = new Sphere(vec3(0, 15.0f, 0.0f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	//m_sphere->SetVelocity(vec3(0.0f, -5.0f, 0.0f));
-
-	//m_sceen->addObject(m_sphere);
+	m_sphere = new Sphere(vec3(10, 3.0f, 0.0f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_sphere->SetVelocity(vec3(-5.0f, 0.0f, 0.0f));
+	m_sceen->addObject(m_sphere);
 
 	// make second light object
 	//Sphere *object2 = new Sphere(vec3(0, 0, 0.0f), 2, 1.0f,
@@ -60,11 +59,15 @@ bool PhysicsEngineApp::startup() {
 	Plain * plain = new Plain(vec3(0, 0, 0), vec3(0, 1, 0), 100, vec4(0, 0, 1, 1), true);
 	m_sceen->addObject(plain);
 
-	plain = new Plain(vec3(0, 0, 10), vec3(0, 0, -1), 100, vec4(1, 0, 1, 1), true);
-	m_sceen->addObject(plain);
+	//plain = new Plain(vec3(0, 0, 10), vec3(0, 0, -1), 100, vec4(1, 0, 1, 1), true);
+	//m_sceen->addObject(plain);
+	Aabb * cube;
+	cube = new Aabb(vec3(0.0f, 15.0f, 0.0f), vec3(1,1,1), 10, vec4(1,1,1,1), false);
+	cube->SetVelocity(vec3(0.0f, 0.0f, 0.0f));
+	m_sceen->addObject(cube);
 
-	Aabb * cube = new Aabb(vec3(0.0f, 5.0f, 0.0f), vec3(1,1,1), 10, vec4(1,1,1,1), false);
-	cube->SetVelocity(vec3(0.0f, 0.0f, 3.0f));
+	cube = new Aabb(vec3(0.0f, 3.0f, 0.0f), vec3(1, 1, 1), 10, vec4(1, 1, 1, 1), false);
+	cube->SetVelocity(vec3(0.0f, 0.0f, 0.0f));
 	m_sceen->addObject(cube);
 
 	//m_sceen->setGlobalForce(vec3(1.0f, 0.0f, 0.0f));
@@ -81,9 +84,9 @@ void PhysicsEngineApp::update(float deltaTime) {
 	m_camera->Update(deltaTime);
 
 	ImGui::Begin("gravity deBug");
-	//ImGui::Text("object Velocity x: %.2f", m_sphere->GetVelocity().x);
-	//ImGui::Text("object Velocity y: %.2f", m_sphere->GetVelocity().y);
-	//ImGui::Text("object Velocity z: %.2f", m_sphere->GetVelocity().z);
+	ImGui::Text("object Velocity x: %.2f", m_sphere->GetVelocity().x);
+	ImGui::Text("object Velocity y: %.2f", m_sphere->GetVelocity().y);
+	ImGui::Text("object Velocity z: %.2f", m_sphere->GetVelocity().z);
 	ImGui::Text("FPS: %i", m_fps);
 	ImGui::End();
 
@@ -130,7 +133,6 @@ void PhysicsEngineApp::draw() {
 
 void PhysicsEngineApp::SpawnSpheres()
 {
-
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
@@ -139,12 +141,16 @@ void PhysicsEngineApp::SpawnSpheres()
 			float g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			float b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
-			float LO = -5;
-			float HI = 5;
+			float LO = -10;
+			float HI = 10;
+			int MLO = 1;
+			int MHI = 20;
+
 			float x = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
 			float z = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
+			int m = LO + static_cast <int> (rand()) / (static_cast <int> (RAND_MAX / (MHI - MLO)));
 
-			m_sphere = new Sphere(vec3(j * 3, 10.0f, i *3), 1, 2, 
+			m_sphere = new Sphere(vec3(j * 2, 10.0f, i *2), 1, m,
 				vec4(r, g, b, 1.0f), false);
 			m_sphere->SetVelocity(vec3(x, 0.0f, z));
 			m_sceen->addObject(m_sphere);

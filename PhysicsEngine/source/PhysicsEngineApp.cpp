@@ -4,15 +4,14 @@
 #include "Input.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-
-#include "Physics\Sceen.h"
-#include "Physics\Object.h"
-#include "Physics\Sphere.h"
-#include "Physics\Plain.h"
-using namespace Physics;
-
 #include <imgui.h>
 
+#include "Physics\Sceen.h"
+#include "Physics\Sphere.h"
+#include "Physics\Plain.h"
+#include "Physics\AABB.h"
+
+using namespace Physics;
 using glm::vec3;
 using glm::vec4;
 using glm::mat4;
@@ -42,21 +41,28 @@ bool PhysicsEngineApp::startup() {
 
 	// set the sceen up
 	m_sceen = new Sceen();
-	//m_sceen->setGravity(vec3(0.0f, 9.8f, 0.0f));
+	m_sceen->setGravity(vec3(0.0f, 0.0f, 0.0f));
 
 	// make first heavy object
-	m_sphere = new Sphere(vec3(10, 10.0f,0.0f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	m_sphere->SetVelocity(vec3(-3.0f, 0.0f, 0.0f));
+	m_sphere = new Sphere(vec3(0, 10.0f, 0.0f), 2, 2, vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_sphere->SetVelocity(vec3(0.0f, -5.0f, 0.0f));
 
 	m_sceen->addObject(m_sphere);
 
 	// make second light object
-	Sphere *object2 = new Sphere(vec3(10.0f, 2.5f, 0.0f), 2, 1.0f,
-								vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
-	m_sceen->addObject(object2);
+	//Sphere *object2 = new Sphere(vec3(0, 0, 0.0f), 2, 1.0f,
+	//							vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
+	//m_sceen->addObject(object2);
 
 	Plain * plain = new Plain(vec3(0, 0, 0), vec3(0, 1, 0), 100, vec4(0, 0, 1, 1), true);
 	m_sceen->addObject(plain);
+
+	//plain = new Plain(vec3(0, 0, -10), vec3(0, 0, 1), 100, vec4(1, 0, 1, 1), true);
+	//m_sceen->addObject(plain);
+
+	Aabb * cube = new Aabb(vec3(0.0f, 2.0f, 0.0f), vec3(1,1,1), 10, vec4(1,1,1,1), false);
+	cube->SetVelocity(vec3(0.0f, 0.0f, 0.0f));
+	m_sceen->addObject(cube);
 
 	//m_sceen->setGlobalForce(vec3(1.0f, 0.0f, 0.0f));
 

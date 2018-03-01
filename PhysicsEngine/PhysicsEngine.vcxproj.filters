@@ -59,7 +59,7 @@
     <ClInclude Include="include\Physics\Plain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\PhysicsAABB.h">
+    <ClInclude Include="include\Physics\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

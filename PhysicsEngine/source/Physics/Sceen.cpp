@@ -1,5 +1,4 @@
 #include "..\..\include\Physics\Sceen.h"
-#include "Physics\Object.h"
 #include "Physics\Sphere.h"
 #include "Physics\Plain.h"
 
@@ -203,6 +202,12 @@ void Sceen::seperateSphereSphere(Sphere * sa, Sphere * sb)
 		// find out how much they overlap
 		float overlap = radi - distince;
 
+		vec3 n = sb->GetPosition() - sa->GetPosition();
+		n = glm::normalize(n);
+
+		vec3 tmp = (overlap / 2) * n;
+
+
 		// check if ever sphere is static
 		if (sa->GetIsStatic() || sb->GetIsStatic())
 		{			
@@ -216,8 +221,8 @@ void Sceen::seperateSphereSphere(Sphere * sa, Sphere * sb)
 		else
 		{
 			// move the objects apart
-			sa->SetPosition(sa->GetPosition() - (overlap / 2));
-			sb->SetPosition(sb->GetPosition() + (overlap / 2));
+			sa->SetPosition(sa->GetPosition() - tmp);
+			sb->SetPosition(sb->GetPosition() + tmp);
 		}
 	}
 }

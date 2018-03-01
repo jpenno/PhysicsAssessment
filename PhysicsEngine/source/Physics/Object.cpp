@@ -1,12 +1,15 @@
-#include "Physics\Object.h"
 #include "Physics\Sphere.h"
 #include "Physics\Plain.h"
+#include "Physics\AABB.h"
 #include <Gizmos.h>
 
-#include <iostream>
 using namespace Physics;
 
 using glm::vec3;
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 Object::Object(ShapeType shape, vec3 pos, float mass, vec4 color, bool isStatic)
 	: m_shape(shape), m_position(pos), m_mass(mass), m_color(color), m_isStatic(isStatic)
@@ -57,7 +60,7 @@ bool Object::isColliding(Object * other)
 			break;
 
 		case Physics::AABB:
-			//TODO: add collision deticion
+			return isCollidingAABBSphere((Aabb*) other, (Sphere*) this);
 			break;
 
 		case Physics::PLAIN:
@@ -73,7 +76,18 @@ bool Object::isColliding(Object * other)
 			break;
 
 		case Physics::AABB:
-			//TODO: add collision deticion
+			isCollidingAABBPlain((Aabb*)other, (Plain*)this);
+			break;
+		}
+		break;
+	case Physics::AABB:
+		switch (other->GetShape())
+		{
+		case Physics::PLAIN:
+			isCollidingAABBPlain((Aabb*) this, (Plain*) other);
+			break;
+		case Physics::SPHERE:
+			return isCollidingAABBSphere((Aabb*)this, (Sphere*)other);
 			break;
 		}
 		break;
@@ -101,11 +115,118 @@ bool Object::isCollidingSpherePlain(Sphere * sphere, Plain * plain)
 	// find distince to the plain 
 	vec3 tmp = sphere->GetPosition() - plain->GetPosition();
 	float distince = glm::dot(plain->getNormal(), tmp);
-	std::cout << "distince: " << distince << std::endl;
 
 	if (distince < sphere->GetRadius()){
 		//sphere->SetVelocity(vec3());
 		return true;
 	}
+	return false;
+}
+
+bool Object::isCollidingAABBPlain(Aabb * aabb, Plain * plain)
+{
+	vec3 tmp = aabb->GetPosition() - plain->GetPosition();
+	float distince = glm::dot(plain->getNormal(), tmp);
+	
+	if (distince < aabb->getSize().y) {
+		aabb->SetVelocity(vec3());
+		return true;
+	}
+	if (distince < aabb->getSize().x) {
+		aabb->SetVelocity(vec3());
+		return true;
+	}
+	if (distince < aabb->getSize().z) {
+		aabb->SetVelocity(vec3());
+		return true;
+	}
+	return false;
+}
+
+bool Physics::Object::isCollidingAABBSphere(Aabb * aabb, Sphere * sphere)
+{
+	auto clamp = [](
+		float & p,
+		float maxX,
+		float minx)
+	{
+		if (p > maxX)
+			p = maxX;	
+		if (p < minx)
+			p = minx;
+	};
+
+	auto check = [&](
+		vec3 spherPos,
+		vec3 clampPos) -> bool
+	{
+		float distince = glm::distance(clampPos, sphere->GetPosition());
+
+		if (distince < sphere->GetRadius())
+			return true;
+
+		return false;
+	};
+
+	vec3 tmp = sphere->GetPosition() - aabb->GetPosition();
+	float distince1 = 0.0f;
+	float distince2 = 0.0f;
+	vec3 clampPos = vec3();
+	clampPos = sphere->GetPosition();
+
+	// do the top and bottom of the AABB *****************************************************
+	// find distince to the to side of the AABB
+	distince1 = (glm::dot(vec3(0,  1, 0), tmp) - aabb->getSize().y);
+	distince2 = (glm::dot(vec3(0, -1, 0), tmp) - aabb->getSize().y);
+
+	if ((distince1 < sphere->GetRadius()) &&
+		(distince2 < sphere->GetRadius())) {
+		// clam the x amd z to the max x and z in the AABB
+		clamp(clampPos.x, aabb->getMax().x, aabb->getMin().x);
+		clamp(clampPos.z, aabb->getMax().z, aabb->getMin().z);
+
+		if (check(sphere->GetPosition(), clampPos))
+		{
+			sphere->SetVelocity(vec3());
+			return true;
+		}
+	}
+	//****************************************************************************************
+
+	// do the front and back of the AABB *****************************************************
+	distince1 = (glm::dot(vec3( 1, 0, 0), tmp) - aabb->getSize().x);
+	distince2 = (glm::dot(vec3(-1, 0, 0), tmp) - aabb->getSize().x);
+
+	if ((distince1 < sphere->GetRadius()) &&
+		(distince2 < sphere->GetRadius())) {
+		// clamp the y amd z to the max y and z in the AABB
+		clamp(clampPos.y, aabb->getMax().y, aabb->getMin().y);
+		clamp(clampPos.z, aabb->getMax().z, aabb->getMin().z);
+
+		if (check(sphere->GetPosition(), clampPos))
+		{
+			sphere->SetVelocity(vec3());
+			return true;
+		}
+	}
+	//****************************************************************************************
+
+	// do the Left and right of the AABB *****************************************************
+	distince1 = (glm::dot(vec3(0, 0, 1), tmp) - aabb->getSize().x);
+	distince2 = (glm::dot(vec3(0, 0, -1), tmp) - aabb->getSize().x);
+
+	if ((distince1 < sphere->GetRadius()) &&
+		(distince2 < sphere->GetRadius())) {
+		// clamp the y amd z to the max y and z in the AABB
+		clamp(clampPos.y, aabb->getMax().y, aabb->getMin().y);
+		clamp(clampPos.x, aabb->getMax().x, aabb->getMin().x);
+
+		if (check(sphere->GetPosition(), clampPos))
+		{
+			sphere->SetVelocity(vec3());
+			return true;
+		}
+	}
+	//****************************************************************************************
 	return false;
 }

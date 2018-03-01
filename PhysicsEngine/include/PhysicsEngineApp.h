@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Application.h"
 #include <glm/mat4x4.hpp>
 
@@ -8,7 +7,6 @@ namespace Physics {
 	class Sceen;
 	class Sphere;
 }
-
 
 class PhysicsEngineApp : public aie::Application {
 public:

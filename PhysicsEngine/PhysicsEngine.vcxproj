@@ -173,7 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
-    <ClInclude Include="include\PhysicsAABB.h" />
+    <ClInclude Include="include\Physics\AABB.h" />
     <ClInclude Include="include\PhysicsEngineApp.h" />
     <ClInclude Include="include\Physics\Object.h" />
     <ClInclude Include="include\Physics\Plain.h" />

@@ -7,6 +7,7 @@ namespace Physics {
 	enum ShapeType { SPHERE, PLAIN,AABB };
 	class Sphere;
 	class Plain;
+	class Aabb;
 
 	class Object
 	{
@@ -16,7 +17,7 @@ namespace Physics {
 	public:
 		virtual ~Object() = 0;
 
-		void update(float deltaTime);
+		virtual void update(float deltaTime);
 		void applyForce(const glm::vec3 & forece);
 
 		virtual void draw() = 0;
@@ -54,6 +55,7 @@ namespace Physics {
 
 		bool isCollidingSphereSphere(Sphere *objecta, Sphere * objectb);
 		bool isCollidingSpherePlain(Sphere *objA, Plain *objB);
-
+		bool isCollidingAABBPlain(Aabb * aabb, Plain * plain);
+		bool isCollidingAABBSphere(Aabb * aabb, Sphere * sphere);
 	};
 }

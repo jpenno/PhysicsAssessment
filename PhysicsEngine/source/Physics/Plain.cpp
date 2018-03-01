@@ -5,9 +5,7 @@
 
 using namespace Physics;
 
-
-
-Physics::Plain::Plain(vec3 position, vec3 normal, float mass, vec4 colour, bool isStatic) :
+Plain::Plain(vec3 position, vec3 normal, float mass, vec4 colour, bool isStatic) :
 Object(Physics::ShapeType::PLAIN, position, mass, colour, isStatic),
 m_normal(normal)
 {
@@ -91,7 +89,4 @@ void Plain::draw()
 							vec3( 100, -100, m_position.z),
 							m_color);
 	}
-
-
-
 }
